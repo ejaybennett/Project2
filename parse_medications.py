@@ -2,7 +2,7 @@ import xml.etree.ElementTree as ET
 import os
 from formatDrugNames import formatDrugName
 
-output = open("medications.txt", "w")
+output = open("medications3.txt", "w")
 
 # Dictionary: (medication type, count)
 medication_types = {}
@@ -14,9 +14,12 @@ medication_types_per_patient = [{} for i in range(450)]
 medications_per_patient = [{} for i in range(450)]
 
 directory = 'Project2-newdata'
+i = 0
 for filename in os.listdir(directory):
+    i += 1
     if not "c" in filename and not "i" in filename:
         curr_patient = int(filename[:3])
+        print("FILE: ", i, " ", "PATIENT: ", curr_patient)
         # print(curr_patient)
 
         tree = ET.parse(directory + '/' + filename)
@@ -66,13 +69,21 @@ for filename in os.listdir(directory):
                 else:
                     medications_per_patient[curr_patient][medication] = 1
 
+output.write('Medication types:\n')
+output.write(str(medication_types) + '\n')
+output.write('Medication types per patient:\n')
+output.write(str(medication_types_per_patient) + '\n')
+output.write('Medications:\n')
+output.write(str(medications) + '\n')
+output.write('Medications per patient:\n')
+output.write(str(medications_per_patient) + '\n')
 output.close()
 
 #print('MEDICATION TYPES:')
 # print(medication_types)
 #print('MEDICATION TYPES PER PATIENT:')
 # print(medication_types_per_patient)
-print('MEDICATIONS:')
-print(medications)
+# print('MEDICATIONS:')
+# print(medications)
 #print('MEDICATIONS PER PATIENT:')
 # print(medications_per_patient)

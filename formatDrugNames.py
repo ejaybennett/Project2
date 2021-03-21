@@ -13,21 +13,23 @@ def getStandardName(term, output):
         firstMatch = jsonData['approximateGroup']['candidate'][0]
     except:
         # was unable to find the term, proceed without further action
-        return term
+        # return term
+        print('UNABLE TO FIND TERM')
+        return 'error'
     getNameURL = "https://rxnav.nlm.nih.gov/REST/rxcui/{}.json".format(
         firstMatch['rxcui'])
     with urllib.request.urlopen(getNameURL) as response:
         nameData = json.loads(response.read())
 
-    # it was just line 26, but I added the try/except because it was sometimes failing.
+    # it was just line 27, but I added the try/except because it was sometimes failing.
     # Returning 'error' is a short term solution.
     try:
         print(nameData['idGroup']['name'].lower())
-        output.write(nameData['idGroup']['name'].lower() + '\n')
+        #output.write(nameData['idGroup']['name'].lower() + '\n')
         return nameData['idGroup']['name'].lower()
     except:
         print('error: ', term)
-        output.write('error: ' + term + '\n')
+        #output.write('error: ' + term + '\n')
         return 'error'  # maybe just return the original term?
 
 
@@ -52,6 +54,16 @@ def removeDosing(singleDrug):
     singleDrug = re.sub(r'[0-9]+', '', singleDrug)
     # remove special characters
     singleDrug = re.sub('[^A-Za-z0-9]+', '', singleDrug)
+
+    # Fix commonly missed drug names
+    if singleDrug.lower() == "nph":
+        singleDrug = "insulin"
+    if singleDrug.lower() == "micronase" or singleDrug.lower() == "diabeta":
+        singleDrug = "glyburide"
+    if singleDrug.lower() == "imdur":
+        singleDrug = "isosorbide mononitrate"
+    if singleDrug.lower() == "nitro":
+        singleDrug = "nitroglycerin"
     return singleDrug
 
 
