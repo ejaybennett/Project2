@@ -2,7 +2,7 @@ import xml.etree.ElementTree as ET
 import os
 from formatDrugNames import formatDrugName
 
-output = open("medications3.txt", "w")
+output = open("medications4.txt", "w")
 
 # Dictionary: (medication type, count)
 medication_types = {}
