@@ -24,7 +24,7 @@ def getStandardName(term, output):
     # it was just line 27, but I added the try/except because it was sometimes failing.
     # Returning 'error' is a short term solution.
     try:
-        print(nameData['idGroup']['name'].lower())
+        #print(nameData['idGroup']['name'].lower())
         #output.write(nameData['idGroup']['name'].lower() + '\n')
         return nameData['idGroup']['name'].lower()
     except:
