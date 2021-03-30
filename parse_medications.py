@@ -4,6 +4,13 @@ from formatDrugNames import formatDrugName
 from extractVitals import extractVitalSign
 output = open("medications3.txt", "w")
 
+def dictionary_union(a,b):
+	c = b
+	for k in a.keys():
+		c[k] = a[k]
+	return c
+
+
 # Dictionary: (medication type, count)
 medication_types = {}
 # Dictionary: (medication, count)
@@ -27,17 +34,20 @@ for filename in os.listdir(directory):
 
         tree = ET.parse(directory + '/' + filename)
         root = tree.getroot()
-        print("VITALS")
-        text = root[0].text
-        p = extractVitalSign(text)
-        #print(p)
-        vitals_per_patient[curr_patient] = p
-        for v in p.keys():
-            print(v,":",str(p[v]))
-            if v in vitals:
-                vitals[v] = vitals[v] + 1
-            else:
-                vitals[v] = 1
+        try:
+            print("VITALS")
+            text = root[0].text
+            p = extractVitalSign(text)
+            #print(p)
+            vitals_per_patient[curr_patient] = p
+            for v in p.keys():
+                print(v,":",str(p[v]))
+                if v in vitals:
+                    vitals[v] = vitals[v] + 1
+                else:
+                    vitals[v] = 1
+        except Exception as e:
+            print(e)
         for medication_tag in root.iter('MEDICATION'):
             # Only parse inner medication tags
             if len(medication_tag.attrib) > 4:
@@ -96,6 +106,18 @@ output.write('Medications per patient:\n')
 output.write(str(vitals_per_patient) + '\n')
 output.close()
 
+master_patient_dictionary = [dictionary_union(dictionary_union(medications_per_patient[i] ,\
+                                                               medication_types_per_patient[i]),\
+                                              vitals_per_patient[i])\
+                             for i in range(len(vitals_per_patient))]
+columns = ["Patient Number"] + list(vitals.keys()) + list(medications.keys()) +\
+          list(medication_types.keys())
+import csv
+with open('master_excel.csv', 'w') as csvfile:
+	writer = csv.DictWriter(csvfile, fieldnames = columns)
+	writer.writeheader()
+	for data in master_patient_dictionary:
+		writer.writerow(data)
 #print('MEDICATION TYPES:')
 # print(medication_types)
 #print('MEDICATION TYPES PER PATIENT:')

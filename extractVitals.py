@@ -155,7 +155,10 @@ r"""(?P<unit>mg/hg|celsius|c|farenheit|f |kg|kilo|lb|measured|today|hormone|poun
             unit = None
         if unit != None:
             unit = m.group("unit").strip()
-        value = valueFromUnit(value,unit)
+        try:
+            value = valueFromUnit(value,unit)
+        except:
+            pass
         indicator = indicatorDictionary[indicator]
         if isSignAcceptable(value,indicator):
             out[indicator] = value
