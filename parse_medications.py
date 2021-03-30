@@ -1,18 +1,21 @@
 import xml.etree.ElementTree as ET
 import os
 from formatDrugNames import formatDrugName
-
+from extractVitals import extractVitalSign
 output = open("medications3.txt", "w")
 
 # Dictionary: (medication type, count)
 medication_types = {}
 # Dictionary: (medication, count)
 medications = {}
+# Dictionary: (vital, count)
+vitals = {}
 # List of dictionaries: (medication type, count), indexed by patient
 medication_types_per_patient = [{} for i in range(450)]
 # List of dictionaries: (medication, count), indexed by patient
 medications_per_patient = [{} for i in range(450)]
-
+# List of dictionaries: (vitalIndicator, value), indexed by patient
+vitals_per_patient = [{} for i in range(450)]
 directory = 'Project2-newdata'
 i = 0
 for filename in os.listdir(directory):
@@ -24,7 +27,17 @@ for filename in os.listdir(directory):
 
         tree = ET.parse(directory + '/' + filename)
         root = tree.getroot()
-
+        print("VITALS")
+        text = root[0].text
+        p = extractVitalSign(text)
+        #print(p)
+        vitals_per_patient[curr_patient] = p
+        for v in p.keys():
+            print(v,":",str(p[v]))
+            if v in vitals:
+                vitals[v] = vitals[v] + 1
+            else:
+                vitals[v] = 1
         for medication_tag in root.iter('MEDICATION'):
             # Only parse inner medication tags
             if len(medication_tag.attrib) > 4:
@@ -77,6 +90,10 @@ output.write('Medications:\n')
 output.write(str(medications) + '\n')
 output.write('Medications per patient:\n')
 output.write(str(medications_per_patient) + '\n')
+output.write('Vitals:\n')
+output.write(str(vitals) + '\n')
+output.write('Medications per patient:\n')
+output.write(str(vitals_per_patient) + '\n')
 output.close()
 
 #print('MEDICATION TYPES:')
